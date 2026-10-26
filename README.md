@@ -18,11 +18,11 @@ npm run preview
 
 Deploy the `dist/` directory to any static host. The former `/portfolio` URL redirects to `/#consultations`, including a generated static redirect page.
 
-The site is adapted for a psychology practice: about, approach, consultation formats, common questions, and booking. The original portrait photographs and locally hosted fonts are retained. Photography portfolio content, placeholder branding, and generic social links have been removed. The first meeting is a free 15-minute introduction; an individual consultation lasts 60 minutes and costs 140 PLN. Introduction booking uses a separate WhatsApp draft link; the provided Cal.com event is for the standard 60-minute session. No therapeutic modalities or additional credentials are invented.
+The site is adapted for a psychology practice: about, approach, consultation formats, common questions, and booking. The original portrait photographs and locally hosted fonts are retained. Photography portfolio content, placeholder branding, and generic social links have been removed. The first meeting is a free 15-minute introduction; an individual consultation lasts 50 minutes and costs 140 PLN. Introduction booking uses a separate WhatsApp draft link; the Cal.com event duration is managed separately and was not modified as part of the website text update. No therapeutic modalities or additional credentials are invented.
 
 ## Cal.com booking
 
-The booking section uses the official `@calcom/embed-react` inline calendar with a light month view. An external booking link and WhatsApp/Telegram contacts remain available if the widget is blocked. The supplied event https://cal.com/polina.pranovich/sesja is configured as the default. Its 60-minute duration and available slots have been verified. The former Google Calendar booking page is no longer embedded.
+The booking section uses the official `@calcom/embed-react` inline calendar with a light month view. An external booking link and WhatsApp/Telegram contacts remain available if the widget is blocked. The supplied event https://cal.com/polina.pranovich/sesja is configured as the default. Its available slots have been verified. Changing the duration text on this website does not change the event settings in Cal.com. The former Google Calendar booking page is no longer embedded.
 
 1. In Cal.com, create an individual event type, configure duration, availability, timezone, meeting location, and booking conditions.
 2. Copy the public event URL, e.g. `https://cal.com/username/consultation`.
