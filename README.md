@@ -18,17 +18,17 @@ npm run preview
 
 Deploy the `dist/` directory to any static host. The former `/portfolio` URL redirects to `/#consultations`, including a generated static redirect page.
 
-The site is adapted for a psychology practice: about, approach, consultation formats, common questions, and booking. The original portrait photographs and locally hosted fonts are retained. Photography portfolio content, placeholder branding, and generic social links have been removed. The first meeting is a 15-minute introduction; an individual consultation costs 140 PLN per session. The introduction price and standard session duration have not been specified. No therapeutic modalities or additional credentials are invented.
+The site is adapted for a psychology practice: about, approach, consultation formats, common questions, and booking. The original portrait photographs and locally hosted fonts are retained. Photography portfolio content, placeholder branding, and generic social links have been removed. The first meeting is a free 15-minute introduction; an individual consultation lasts 60 minutes and costs 140 PLN. Introduction booking uses a separate WhatsApp draft link; the provided Cal.com event is for the standard 60-minute session. No therapeutic modalities or additional credentials are invented.
 
 ## Cal.com booking
 
-The booking section uses the official `@calcom/embed-react` inline calendar with a light month view. An external booking link and WhatsApp/Telegram contacts remain available if the widget is blocked. Until a real Cal.com event URL is configured, the existing Google Calendar remains active to keep live booking available. Once a Cal.com URL is provided, it takes priority automatically.
+The booking section uses the official `@calcom/embed-react` inline calendar with a light month view. An external booking link and WhatsApp/Telegram contacts remain available if the widget is blocked. The supplied event https://cal.com/polina.pranovich/sesja is configured as the default. Its 60-minute duration and available slots have been verified. The former Google Calendar booking page is no longer embedded.
 
 1. In Cal.com, create an individual event type, configure duration, availability, timezone, meeting location, and booking conditions.
 2. Copy the public event URL, e.g. `https://cal.com/username/consultation`.
 3. Set `defaultBookingUrl` in `src/booking.js` to publish it with the site, or override it with the public build variable `VITE_CAL_BOOKING_URL`. For local development, copy `.env.example` to `.env.local`, add the URL, and restart Vite. For GitHub Actions, configure the variable in the repository settings; rebuild after changing it.
 
-If no valid Cal.com event URL is configured, the existing Google Calendar booking page is displayed. The 15-minute introductory meeting has a separate WhatsApp draft link so it cannot accidentally book a standard session slot. Google Calendar can still be connected privately inside Cal.com to block occupied times; that connection does not require website changes. Do not put API keys, access tokens, or private calendar URLs in `VITE_` variables.
+If the Cal.com event URL is missing or invalid, contact-based booking is displayed. The 15-minute introductory meeting has a separate WhatsApp draft link so it cannot accidentally book a standard session slot. Google Calendar can still be connected privately inside Cal.com to block occupied times; that connection does not require website changes. Do not put API keys, access tokens, or private calendar URLs in `VITE_` variables.
 
 Booking, availability, confirmations, and any enabled reminders are handled by Cal.com. Verify the actual event page before deployment. Do not create test appointments without the owner's approval.
 

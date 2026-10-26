@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
-import { calBooking, googleBooking } from './booking';
+import { calBooking } from './booking';
 import Cal from '@calcom/embed-react';
 
 const calEmbedConfig = { layout: 'month_view', theme: 'light' };
@@ -68,7 +68,7 @@ function Contact() {
     <div className="mx-auto mb-10 max-w-[680px] text-center">
       <p className="eyebrow mb-5">Первый шаг</p>
       <h2 id="booking-title">Записаться на консультацию</h2>
-      <p className="mt-6 text-sm leading-7 text-neutral-600">Индивидуальная консультация — 140 zł. Выберите удобную дату и свободное время в календаре. Для первой встречи-знакомства на 15 минут напишите мне.</p>
+      <p className="mt-6 text-sm leading-7 text-neutral-600">Индивидуальная консультация — 140 zł. Выберите удобную дату и свободное время в календаре. Первая встреча-знакомство — 15 минут бесплатно. Чтобы договориться о знакомстве, напишите мне.</p>
     </div>
     <div className="booking-shell">
       <div className="booking-toolbar"><div className="flex items-center gap-3"><Icon name="calendar" /><span>Онлайн-консультация</span></div><span className="text-xs text-neutral-500">Русский / Polski</span></div>
@@ -77,10 +77,13 @@ function Contact() {
           <Cal key={calBooking.calLink} namespace="psychology-consultation" calLink={calBooking.calLink} config={calEmbedConfig} style={{ width: '100%', minHeight: '700px', overflow: 'auto' }} />
         </div>
         <div className="booking-fallback"><p>Если календарь не отображается, откройте страницу записи отдельно.</p><a className="text-link" href={calBooking.bookingUrl} target="_blank" rel="noopener noreferrer">Открыть в Cal.com ↗</a></div>
-      </> : <>
-        <iframe className="booking-frame" src={googleBooking.embedUrl} title="Выбрать свободное время и записаться на консультацию — Google Calendar" loading="lazy" referrerPolicy="strict-origin-when-cross-origin" />
-        <div className="booking-fallback"><p>Если календарь не отображается, откройте страницу записи отдельно.</p><a className="text-link" href={googleBooking.bookingUrl} target="_blank" rel="noopener noreferrer">Открыть календарь ↗</a></div>
-      </>}
+      </> : <div className="booking-empty text-center">
+        <div className="booking-icon mx-auto mb-6"><Icon name="calendar" /></div>
+        <h3>Запись по договорённости</h3>
+        <p>Онлайн-календарь пока недоступен. Напишите мне, чтобы подобрать удобное время.</p>
+        <a className="dark-button mt-7 inline-block" href={whatsapp} target="_blank" rel="noopener noreferrer">Обсудить время в WhatsApp ↗</a>
+      </div>}
+
 
     </div>
     <div className="booking-help mt-8 flex flex-col items-center justify-between gap-5 md:flex-row">
@@ -122,14 +125,14 @@ function Consultations() {
       <article className="consultation-card">
         <span className="eyebrow">01 / Знакомство</span>
         <h3>Встреча-знакомство</h3>
-        <div className="session-meta"><span>15 минут</span><span>Онлайн</span></div>
+        <div className="session-meta"><span>15 минут</span><span>Бесплатно</span><span>Онлайн</span></div>
         <p>Короткая первая встреча, чтобы познакомиться, задать вопросы и обсудить, с чем вам хотелось бы поработать. Можно понять, комфортно ли вам продолжать общение.</p>
         <a className="text-link" href={introductionBookingUrl} target="_blank" rel="noopener noreferrer">Записаться на знакомство ↗</a>
       </article>
       <article className="consultation-card">
         <span className="eyebrow">02 / Диалог</span>
         <h3>Индивидуальная консультация</h3>
-        <div className="session-price"><span>140 zł</span><small>за сессию</small></div>
+        <div className="session-price"><span>140 zł</span><small>за сессию · 60 минут</small></div>
         <p>Вместе исследуем ваши переживания, отношения и жизненные ситуации. Ищем причины возникающих трудностей и подходящие вам способы справляться с ними.</p>
         <a className="text-link" href="#contact">Выбрать время консультации ↗</a>
       </article>
@@ -139,10 +142,10 @@ function Consultations() {
 
 function Questions() {
   const questions = [
-    ['Как проходит встреча-знакомство?', 'Первая встреча длится 15 минут и проходит онлайн. Мы знакомимся, обсуждаем ваш запрос и вопросы о дальнейшей работе. Чтобы договориться о времени, нажмите «Записаться на знакомство» или напишите мне в WhatsApp либо Telegram.'],
+    ['Как проходит встреча-знакомство?', 'Первая встреча длится 15 минут, проходит онлайн и бесплатна. Мы знакомимся, обсуждаем ваш запрос и вопросы о дальнейшей работе. Чтобы договориться о времени, нажмите «Записаться на знакомство» или напишите мне в WhatsApp либо Telegram.'],
     ['Нужно ли готовиться к первой встрече?', 'Вы можете заранее подумать, о чём хотелось бы поговорить, или начать с того, что волнует прямо сейчас. Необязательно подбирать правильные слова — разобраться в запросе можно вместе.'],
     ['На каком языке проходят консультации?', 'Я провожу индивидуальные консультации онлайн на русском и польском языках. При записи укажите, какой язык вам удобнее.'],
-    ['Сколько стоит консультация?', 'Стоимость индивидуальной консультации — 140 zł за сессию. Доступное время можно выбрать в разделе «Записаться». По организационным вопросам напишите мне в WhatsApp или Telegram.'],
+    ['Сколько стоит консультация?', 'Стоимость индивидуальной консультации — 140 zł за 60 минут. Первая 15-минутная встреча-знакомство бесплатна. Доступное время можно выбрать в разделе «Записаться». По организационным вопросам напишите мне в WhatsApp или Telegram.'],
   ];
   return <section className="page-container py-16 md:py-20" aria-labelledby="questions-title">
     <div className="mx-auto max-w-[780px]"><p className="eyebrow mb-5">Перед встречей</p><h2 id="questions-title" className="mb-9">Частые вопросы</h2>
