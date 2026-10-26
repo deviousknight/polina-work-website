@@ -46,7 +46,10 @@ form input:focus,form textarea:focus{outline:0;border-bottom-color:#333}
 
 .booking-shell{border:1px solid #e5e1da;background:white;overflow:hidden;border-radius:4px}
 .booking-toolbar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 28px;border-bottom:1px solid #e5e1da;background:#f8f7f4;font-size:14px}
-.booking-frame{display:block;width:100%;height:760px;border:0;background:white}
+.cal-booking{width:100%;min-width:0;min-height:700px;background:white}
 .booking-fallback{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 28px;border-top:1px solid #e5e1da;font-size:12px;line-height:1.8;color:#62605a}.booking-fallback a{flex-shrink:0}
 .booking-empty{padding:55px 24px;background:#fbfaf8}.booking-icon{display:flex;align-items:center;justify-content:center;width:56px;height:56px;border:1px solid #d8cfc1;border-radius:50%;color:#8a7a64}.booking-empty h3{font-family:var(--font-serif);font-size:34px;line-height:1.2}.booking-empty p{max-width:500px;margin:20px auto 0;font-size:14px;line-height:1.9;color:#62605a}
-@media(max-width:767px){.booking-toolbar{padding:18px 16px;align-items:flex-start;flex-direction:column;gap:10px}.booking-frame{height:850px}.booking-fallback{padding:20px 16px;align-items:flex-start;flex-direction:column}.booking-empty{padding:40px 20px}.booking-empty h3{font-size:30px}.booking-empty .dark-button{font-size:10px;padding:18px}}
+@media(max-width:767px){.booking-toolbar{padding:18px 16px;align-items:flex-start;flex-direction:column;gap:10px}.cal-booking{min-height:700px}.booking-fallback{padding:20px 16px;align-items:flex-start;flex-direction:column}.booking-empty{padding:40px 20px}.booking-empty h3{font-size:30px}.booking-empty .dark-button{font-size:10px;padding:18px}}
+
+.session-meta{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:0 0 22px}.session-meta span{padding:7px 12px;border:1px solid #d8cfc1;border-radius:30px;font-size:12px;color:#62605a}.session-price{display:flex;align-items:baseline;gap:12px;margin:0 0 22px}.session-price>span{font-family:var(--font-serif);font-size:40px;line-height:1.1}.session-price small{font-size:12px;color:#62605a}
+.booking-frame{display:block;width:100%;height:760px;border:0;background:white}@media(max-width:767px){.booking-frame{height:850px}}

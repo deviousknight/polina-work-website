@@ -1,22 +1,21 @@
-// Public booking page only; no Google credentials are needed in the website.
-export function getGoogleBooking(value = '') {
+// Only a public Cal.com event URL belongs here; no API key is needed.
+export function getCalBooking(value = '') {
   try {
     const url = new URL(value.trim());
-    if (url.protocol !== 'https:' || url.username || url.password || url.port) return null;
-    if (url.hostname === 'calendar.google.com' && /^\/calendar\/appointments\/schedules\/[\w-]+\/?$/.test(url.pathname)) {
-      const bookingUrl = `${url.origin}${url.pathname}`;
-      return { bookingUrl, embedUrl: `${bookingUrl}?gv=true` };
-    }
-    // Google short links are supported as external links, never as iframe URLs.
-    if (url.hostname === 'calendar.app.google' && /^\/[\w-]+\/?$/.test(url.pathname)) {
-      return { bookingUrl: `${url.origin}${url.pathname}`, embedUrl: null };
-    }
+    if (url.protocol !== 'https:' || url.hostname !== 'cal.com' || url.username || url.password || url.port) return null;
+    const calLink = url.pathname.replace(/^\/+|\/+$/g, '');
+    // Individual events: /username/event. Team events: /team/team-name/event.
+    if (!/^(?:team\/)?[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+$/.test(calLink)) return null;
+    return { calLink, bookingUrl: `https://cal.com/${calLink}` };
   } catch {
-    // Missing or invalid configuration keeps the direct contact options visible.
+    // A missing URL keeps contact-based booking available without fake slots.
   }
   return null;
 }
 
-const defaultBookingUrl = 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ3-zQrxWCLF6P84nY8zNlpHO6E8F4WHI07qFywtpMj9miOwXBekJhMnQoRW-wZOpqm_OIlsBZB1';
+const defaultBookingUrl = '';
+export const calBooking = getCalBooking(import.meta.env?.VITE_CAL_BOOKING_URL || defaultBookingUrl);
 
-export const googleBooking = getGoogleBooking(import.meta.env?.VITE_GOOGLE_BOOKING_URL || defaultBookingUrl);
+// Keep the existing booking calendar operational until a real Cal.com event is configured.
+const legacyGoogleUrl = 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ3-zQrxWCLF6P84nY8zNlpHO6E8F4WHI07qFywtpMj9miOwXBekJhMnQoRW-wZOpqm_OIlsBZB1';
+export const googleBooking = calBooking ? null : { bookingUrl: legacyGoogleUrl, embedUrl: `${legacyGoogleUrl}?gv=true` };

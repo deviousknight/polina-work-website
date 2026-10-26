@@ -18,25 +18,21 @@ npm run preview
 
 Deploy the `dist/` directory to any static host. The former `/portfolio` URL redirects to `/#consultations`, including a generated static redirect page.
 
-The site is adapted for a psychology practice: about, approach, consultation formats, common questions, and booking. The original portrait photographs and locally hosted fonts are retained. Photography portfolio content, placeholder branding, and generic social links have been removed. No rates, session lengths, therapeutic modalities, or additional credentials are invented.
+The site is adapted for a psychology practice: about, approach, consultation formats, common questions, and booking. The original portrait photographs and locally hosted fonts are retained. Photography portfolio content, placeholder branding, and generic social links have been removed. The first meeting is a 15-minute introduction; an individual consultation costs 140 PLN per session. The introduction price and standard session duration have not been specified. No therapeutic modalities or additional credentials are invented.
 
-## Google Calendar booking
+## Cal.com booking
 
-The booking section embeds a Google Calendar appointment schedule and keeps WhatsApp/Telegram as fallback contacts. No API key, OAuth secret, backend, or public personal calendar is required.
+The booking section uses the official `@calcom/embed-react` inline calendar with a light month view. An external booking link and WhatsApp/Telegram contacts remain available if the widget is blocked. Until a real Cal.com event URL is configured, the existing Google Calendar remains active to keep live booking available. Once a Cal.com URL is provided, it takes priority automatically.
 
-The supplied booking schedule is configured as the default in `src/booking.js` and works in both development and production. `VITE_GOOGLE_BOOKING_URL` can override it for another deployment.
+1. In Cal.com, create an individual event type, configure duration, availability, timezone, meeting location, and booking conditions.
+2. Copy the public event URL, e.g. `https://cal.com/username/consultation`.
+3. Set `defaultBookingUrl` in `src/booking.js` to publish it with the site, or override it with the public build variable `VITE_CAL_BOOKING_URL`. For local development, copy `.env.example` to `.env.local`, add the URL, and restart Vite. For GitHub Actions, configure the variable in the repository settings; rebuild after changing it.
 
-To replace the schedule:
+If no valid Cal.com event URL is configured, the existing Google Calendar booking page is displayed. The 15-minute introductory meeting has a separate WhatsApp draft link so it cannot accidentally book a standard session slot. Google Calendar can still be connected privately inside Cal.com to block occupied times; that connection does not require website changes. Do not put API keys, access tokens, or private calendar URLs in `VITE_` variables.
 
-1. In Google Calendar, create an **Appointment schedule**. Set duration, availability, timezone, meeting location, and booking conditions.
-2. Copy its public booking-page link. For inline display, use the full `https://calendar.google.com/calendar/appointments/schedules/...` URL from **Sharing options → Website embed → Inline booking page**. A `https://calendar.app.google/...` short link opens externally instead.
-3. Copy `.env.example` to `.env.local`, set `VITE_GOOGLE_BOOKING_URL` to that URL, and restart Vite. Rebuild before deployment; configure the same variable on your build host.
+Booking, availability, confirmations, and any enabled reminders are handled by Cal.com. Verify the actual event page before deployment. Do not create test appointments without the owner's approval.
 
-If no valid link is configured, the site shows an honest contact-based booking fallback and no invented availability. With a configured schedule, Google handles availability, booking, confirmation, and any enabled reminders. A permanent external booking link is available if the embed is blocked. Never put private calendar URLs, access tokens, or credentials in `VITE_` variables: these values are public.
-
-Official setup: https://support.google.com/calendar/answer/10733297?hl=ru
-
-Real availability and end-to-end booking must be checked with the owner's actual booking URL. Do not create a test appointment without the owner's approval.
+Official embed overview: https://cal.com/embed
 
 ## GitHub Pages
 
@@ -46,4 +42,4 @@ The workflow in `.github/workflows/deploy.yml` builds and deploys the site after
 
 Default production URL: https://deviousknight.github.io/polina-work-website/
 
-`npm run build` and `npm run preview` use `/polina-work-website/`; `npm run dev` continues to serve `/`. The workflow obtains the deployment base path from GitHub Pages. For another host or a custom domain, set `VITE_BASE_PATH=/` at build time. Photos, fonts, navigation, and the legacy portfolio redirect respect the base path. The Google booking schedule is included in the build and requires no secrets.
+`npm run build` and `npm run preview` use `/polina-work-website/`; `npm run dev` continues to serve `/`. The workflow obtains the deployment base path from GitHub Pages. For another host or a custom domain, set `VITE_BASE_PATH=/` at build time. Photos, fonts, navigation, and the legacy portfolio redirect respect the base path. The public Cal.com event URL is included in the build and requires no secrets.
