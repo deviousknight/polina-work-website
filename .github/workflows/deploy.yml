@@ -33,6 +33,7 @@ jobs:
         env:
           VITE_BASE_PATH: '${{ steps.pages.outputs.base_path }}/'
           VITE_CAL_BOOKING_URL: '${{ vars.VITE_CAL_BOOKING_URL }}'
+          VITE_CAL_INTRO_BOOKING_URL: '${{ vars.VITE_CAL_INTRO_BOOKING_URL }}'
       - name: Upload website
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:

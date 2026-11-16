@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
-import { calBooking } from './booking';
+import { bookingOptions } from './booking';
 import Cal from '@calcom/embed-react';
 
 const calEmbedConfig = { layout: 'month_view', theme: 'light' };
@@ -63,25 +63,35 @@ function Footer() {
   </footer>;
 }
 
-function Contact() {
+function Contact({ session, onSelect }) {
+  const { title, event, note } = bookingOptions[session];
   return <section id="contact" className="page-container py-20 md:py-24" aria-labelledby="booking-title">
     <div className="mx-auto mb-10 max-w-[680px] text-center">
       <p className="eyebrow mb-5">Первый шаг</p>
       <h2 id="booking-title">Записаться на консультацию</h2>
-      <p className="mt-6 text-sm leading-7 text-neutral-600">Индивидуальная консультация — 140 zł. Выберите удобную дату и свободное время в календаре. Первая встреча-знакомство — 15 минут бесплатно. Чтобы договориться о знакомстве, напишите мне.</p>
+      <p className="mt-6 text-sm leading-7 text-neutral-600">Выберите формат встречи, затем дату и свободное время в календаре.</p>
     </div>
-    <div className="booking-shell">
-      <div className="booking-toolbar"><div className="flex items-center gap-3"><Icon name="calendar" /><span>Онлайн-консультация</span></div><span className="text-xs text-neutral-500">Русский / Polski</span></div>
-      {calBooking ? <>
-        <div className="cal-booking" aria-label="Календарь записи на консультацию">
-          <Cal key={calBooking.calLink} namespace="psychology-consultation" calLink={calBooking.calLink} config={calEmbedConfig} style={{ width: '100%', minHeight: '700px', overflow: 'auto' }} />
+    <div role="group" aria-label="Формат встречи" className="booking-options mb-6 grid grid-cols-2 gap-3">
+      {Object.entries(bookingOptions).map(([id, option]) => (
+        <button key={id} type="button" aria-pressed={session === id} aria-controls="booking-calendar" onClick={() => onSelect(id)}>
+          <span>{option.title}</span>
+          <small>{option.details}</small>
+        </button>
+      ))}
+    </div>
+    <div id="booking-calendar" className="booking-shell">
+      <div className="booking-toolbar"><div className="flex items-center gap-3"><Icon name="calendar" /><span>{title}</span></div><span className="text-xs text-neutral-500">Русский / Polski</span></div>
+      {note && <p className="booking-note" role="status">{note}</p>}
+      {event ? <>
+        <div className="cal-booking" aria-label={`Календарь: ${title}`}>
+          <Cal key={session} namespace={`psychology-${session}`} calLink={event.calLink} config={calEmbedConfig} style={{ width: '100%', minHeight: '700px', overflow: 'auto' }} />
         </div>
-        <div className="booking-fallback"><p>Если календарь не отображается, откройте страницу записи отдельно.</p><a className="text-link" href={calBooking.bookingUrl} target="_blank" rel="noopener noreferrer">Открыть в Cal.com ↗</a></div>
+        <div className="booking-fallback"><p>Если календарь не отображается, откройте страницу записи отдельно.</p><a className="text-link" href={event.bookingUrl} target="_blank" rel="noopener noreferrer">Открыть в Cal.com ↗</a></div>
       </> : <div className="booking-empty text-center">
         <div className="booking-icon mx-auto mb-6"><Icon name="calendar" /></div>
         <h3>Запись по договорённости</h3>
         <p>Онлайн-календарь пока недоступен. Напишите мне, чтобы подобрать удобное время.</p>
-        <a className="dark-button mt-7 inline-block" href={whatsapp} target="_blank" rel="noopener noreferrer">Обсудить время в WhatsApp ↗</a>
+        <a className="dark-button mt-7 inline-block" href={session === 'introduction' ? introductionBookingUrl : whatsapp} target="_blank" rel="noopener noreferrer">Обсудить время в WhatsApp ↗</a>
       </div>}
 
 
@@ -114,7 +124,7 @@ function ContactWidget() {
   </div>;
 }
 
-function Consultations() {
+function Consultations({ onSelect }) {
   return <section id="consultations" className="page-container py-20 md:py-24">
     <div className="mx-auto mb-12 max-w-[660px] text-center">
       <p className="eyebrow mb-5">Формат работы</p>
@@ -127,14 +137,14 @@ function Consultations() {
         <h3>Встреча-знакомство</h3>
         <div className="session-meta"><span>15 минут</span><span>Бесплатно</span><span>Онлайн</span></div>
         <p>Короткая первая встреча, чтобы познакомиться, задать вопросы и обсудить, с чем вам хотелось бы поработать. Можно понять, комфортно ли вам продолжать общение.</p>
-        <a className="text-link" href={introductionBookingUrl} target="_blank" rel="noopener noreferrer">Записаться на знакомство ↗</a>
+        <a className="text-link" href="#contact" onClick={() => onSelect('introduction')}>Записаться на знакомство ↗</a>
       </article>
       <article className="consultation-card">
         <span className="eyebrow">02 / Диалог</span>
         <h3>Индивидуальная консультация</h3>
         <div className="session-price"><span>140 zł</span><small>за сессию · 50 минут</small></div>
         <p>Вместе исследуем ваши переживания, отношения и жизненные ситуации. Ищем причины возникающих трудностей и подходящие вам способы справляться с ними.</p>
-        <a className="text-link" href="#contact">Выбрать время консультации ↗</a>
+        <a className="text-link" href="#contact" onClick={() => onSelect('consultation')}>Выбрать время консультации ↗</a>
       </article>
     </div>
   </section>;
@@ -142,7 +152,7 @@ function Consultations() {
 
 function Questions() {
   const questions = [
-    ['Как проходит встреча-знакомство?', 'Первая встреча длится 15 минут, проходит онлайн и бесплатна. Мы знакомимся, обсуждаем ваш запрос и вопросы о дальнейшей работе. Чтобы договориться о времени, нажмите «Записаться на знакомство» или напишите мне в WhatsApp либо Telegram.'],
+    ['Как проходит встреча-знакомство?', 'Первая встреча длится 15 минут, проходит онлайн и бесплатна. Мы знакомимся, обсуждаем ваш запрос и вопросы о дальнейшей работе. Выберите «Встреча-знакомство» в разделе «Записаться» и отправьте заявку на удобное время. Запись требует подтверждения.'],
     ['Нужно ли готовиться к первой встрече?', 'Вы можете заранее подумать, о чём хотелось бы поговорить, или начать с того, что волнует прямо сейчас. Необязательно подбирать правильные слова — разобраться в запросе можно вместе.'],
     ['На каком языке проходят консультации?', 'Я провожу индивидуальные консультации онлайн на русском и польском языках. При записи укажите, какой язык вам удобнее.'],
     ['Сколько стоит консультация?', 'Стоимость индивидуальной консультации — 140 zł за 50 минут. Первая 15-минутная встреча-знакомство бесплатна. Доступное время можно выбрать в разделе «Записаться». По организационным вопросам напишите мне в WhatsApp или Telegram.'],
@@ -155,6 +165,7 @@ function Questions() {
 }
 
 function App() {
+  const [session, setSession] = useState('consultation');
   useEffect(() => {
     document.title = 'Полина Pranowicz — психолог в Варшаве и онлайн';
     if (window.location.pathname.replace(/\/$/, '') === `${baseUrl}portfolio`) {
@@ -170,7 +181,7 @@ function App() {
         <section className="hero relative flex min-h-[620px] items-center justify-center text-center text-white">
           <img className="absolute inset-0 h-full w-full object-cover" src={`${baseUrl}images/hero.jpg`} alt="Психолог Polina Pranowicz" fetchPriority="high" width="2520" height="1680" />
           <div className="absolute inset-0 bg-black/30" />
-          <div className="hero-copy relative z-10 mx-auto max-w-[1000px] px-6"><p className="eyebrow mb-6 text-white/90">Полина Pranowicz · Психолог</p><h1>О себе. О чувствах. О жизни.</h1><p className="mx-auto mt-5 max-w-[650px] text-base leading-relaxed">Психологическая помощь и поддержка в Варшаве и онлайн по всему миру</p><a className="hero-cta mt-9 inline-flex items-center gap-6" href="#contact">Записаться на консультацию <span aria-hidden="true">↗</span></a></div>
+          <div className="hero-copy relative z-10 mx-auto max-w-[1000px] px-6"><p className="eyebrow mb-6 text-white/90">Полина Pranowicz · Психолог</p><h1>О себе. О чувствах. О жизни.</h1><p className="mx-auto mt-5 max-w-[650px] text-base leading-relaxed">Психологическая помощь и поддержка в Варшаве и онлайн по всему миру</p><a className="hero-cta mt-9 inline-flex items-center gap-6" href="#contact" onClick={() => setSession('consultation')}>Записаться на консультацию <span aria-hidden="true">↗</span></a></div>
           <a href="#about" className="absolute bottom-6 left-1/2 -translate-x-1/2 p-3 transition hover:translate-y-1" aria-label="Обо мне"><Icon name="arrow" /></a>
         </section>
         <section id="about" className="about-grid mx-auto grid max-w-[828px] items-center gap-10 px-6 py-[60px] md:grid-cols-2 md:gap-[60px]">
@@ -187,10 +198,10 @@ function App() {
           ].map(([title, text]) => <div key={title} className="topic"><h3>{title}</h3><p>{text}</p></div>)}</div>
         </section>
         <div className="page-container"><hr /></div>
-        <Consultations />
+        <Consultations onSelect={setSession} />
         <Questions />
         <div className="page-container"><hr /></div>
-        <Contact />
+        <Contact session={session} onSelect={setSession} />
         <div className="page-container"><hr /></div>
 
     </main>
