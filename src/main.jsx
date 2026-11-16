@@ -3,22 +3,15 @@ import { createRoot } from 'react-dom/client';
 import './styles.css';
 import { bookingOptions } from './booking';
 import Cal from '@calcom/embed-react';
+import { translations } from './translations';
 
 const calEmbedConfig = { layout: 'month_view', theme: 'light' };
 
 const baseUrl = import.meta.env.BASE_URL;
+const language = document.documentElement.lang === 'pl' ? 'pl' : 'ru';
+const languagePath = language === 'pl' ? `${baseUrl}pl/` : baseUrl;
 const whatsapp = 'https://wa.me/48576292387';
 const telegram = 'https://t.me/+48576292387';
-const introductionBookingUrl = `${whatsapp}?text=${encodeURIComponent('Здравствуйте! Хочу записаться на 15-минутную встречу-знакомство.')}`;
-const biography = [
-  'Здравствуйте, меня зовут Полина.',
-  'Я психолог и работаю в Варшаве. Провожу индивидуальные консультации онлайн на русском и польском языках.',
-  'Для меня психологическая консультация — это прежде всего пространство, где вам не нужно соответствовать чьим-либо ожиданиям. Здесь можно говорить о сложных чувствах, сомнениях, отношениях, тревогах и жизненных ситуациях так, как вам действительно хочется.',
-  'В работе для меня важны уважение к вашей индивидуальности, внимательное отношение к вашему опыту и отсутствие осуждения. В работе мы вместе исследуем то, что происходит, ищем причины возникающих трудностей и способы справляться с ними.',
-  'Я окончила магистратуру по психологии со специализацией в области клинической психологии, продолжаю профессиональное обучение и регулярно расширяю свои знания и практические навыки.',
-  'Я особенно ценю честный и открытый диалог. Иногда первый шаг — это просто возможность наконец сказать вслух то, что долго оставалось внутри.',
-  'Если вы чувствуете, что сейчас вам нужна поддержка, разобраться в происходящем можно начать с одной встречи.',
-];
 
 function Icon({ name, className = '' }) {
   const paths = {
@@ -33,9 +26,15 @@ function Icon({ name, className = '' }) {
   return <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;
 }
 
-function Header() {
+function Header({ t, session }) {
   const [scrolled, setScrolled] = useState(window.scrollY > 60);
   const [menu, setMenu] = useState(false);
+  const [hash, setHash] = useState(window.location.hash);
+  useEffect(() => {
+    const update = () => setHash(window.location.hash);
+    window.addEventListener('hashchange', update);
+    return () => window.removeEventListener('hashchange', update);
+  }, []);
   useEffect(() => {
     const update = () => setScrolled(window.scrollY > 60);
     window.addEventListener('scroll', update, { passive: true });
@@ -43,36 +42,43 @@ function Header() {
   }, []);
   const solid = scrolled || menu;
   return <header className={`site-header ${solid ? 'solid' : ''}`}>
-    <a href={`${baseUrl}#main`} className="logo" aria-label="Полина Pranowicz — на главную"><span>Polina Pranowicz</span><small>Психолог · Варшава и онлайн</small></a>
-    <button className="menu-toggle md:hidden" aria-label={menu ? 'Закрыть меню' : 'Открыть меню'} aria-expanded={menu} onClick={() => setMenu(!menu)}><Icon name={menu ? 'close' : 'menu'} /></button>
-    <nav aria-label="Основная навигация" className={`${menu ? 'flex' : 'hidden'} md:flex`}>
-      {[['about', 'Обо мне'], ['approach', 'Мой подход'], ['consultations', 'Консультации'], ['contact', 'Записаться']].map(([id, label]) => <a key={id} href={`${baseUrl}#${id}`} onClick={() => setMenu(false)}>{label}</a>)}
+    <a href={`${languagePath}#main`} className="logo" aria-label={t.homeLabel}><span>Polina Pranowicz</span><small>{t.roleLocation}</small></a>
+    <button className="menu-toggle md:hidden" aria-label={menu ? t.menuClose : t.menuOpen} aria-expanded={menu} onClick={() => setMenu(!menu)}><Icon name={menu ? 'close' : 'menu'} /></button>
+    <nav aria-label={t.navLabel} className={`${menu ? 'flex' : 'hidden'} md:flex`}>
+      {Object.entries(t.nav).map(([id, label]) => <a key={id} href={`${languagePath}#${id}`} onClick={() => setMenu(false)}>{label}</a>)}
     </nav>
+    <div className="header-tools" role="group" aria-label={t.languageLabel}>
+      {[['ru', 'Русский', baseUrl], ['pl', 'Polski', `${baseUrl}pl/`]].map(([code, label, path]) => (
+        <a key={code} href={`${path}${hash === '#contact' && session === 'introduction' ? '?session=introduction' : ''}${hash}`} lang={code} hrefLang={code} aria-label={label} aria-current={language === code ? 'page' : undefined}>{code.toUpperCase()}</a>
+      ))}
+    </div>
   </header>;
 }
 
-function Footer() {
+function Footer({ t }) {
   return <footer className="px-6 pb-8 pt-10 text-center text-[13px] text-neutral-600">
     <div className="mb-5 flex justify-center gap-5">
       <a href={whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp"><Icon name="whatsapp" /></a>
       <a href={telegram} target="_blank" rel="noreferrer" aria-label="Telegram"><Icon name="telegram" /></a>
     </div>
-    <p>Polina Pranowicz · Психолог</p>
-    <p className="mt-2 text-xs">Индивидуальные консультации на русском и польском языках</p>
+    <p>{t.footerRole}</p>
+    <p className="mt-2 text-xs">{t.footerText}</p>
     <p className="mt-5 text-[11px]">© {new Date().getFullYear()} Polina Pranowicz</p>
   </footer>;
 }
 
-function Contact({ session, onSelect }) {
-  const { title, event, note } = bookingOptions[session];
+function Contact({ t, session, onSelect }) {
+  const { title, note } = t.booking[session];
+  const event = bookingOptions[session];
+  const introductionBookingUrl = `${whatsapp}?text=${encodeURIComponent(t.introDraft)}`;
   return <section id="contact" className="page-container py-20 md:py-24" aria-labelledby="booking-title">
     <div className="mx-auto mb-10 max-w-[680px] text-center">
-      <p className="eyebrow mb-5">Первый шаг</p>
-      <h2 id="booking-title">Записаться на консультацию</h2>
-      <p className="mt-6 text-sm leading-7 text-neutral-600">Выберите формат встречи, затем дату и свободное время в календаре.</p>
+      <p className="eyebrow mb-5">{t.firstStep}</p>
+      <h2 id="booking-title">{t.bookTitle}</h2>
+      <p className="mt-6 text-sm leading-7 text-neutral-600">{t.bookingHint}</p>
     </div>
-    <div role="group" aria-label="Формат встречи" className="booking-options mb-6 grid grid-cols-2 gap-3">
-      {Object.entries(bookingOptions).map(([id, option]) => (
+    <div role="group" aria-label={t.meetingFormat} className="booking-options mb-6 grid grid-cols-2 gap-3">
+      {Object.entries(t.booking).map(([id, option]) => (
         <button key={id} type="button" aria-pressed={session === id} aria-controls="booking-calendar" onClick={() => onSelect(id)}>
           <span>{option.title}</span>
           <small>{option.details}</small>
@@ -80,30 +86,30 @@ function Contact({ session, onSelect }) {
       ))}
     </div>
     <div id="booking-calendar" className="booking-shell">
-      <div className="booking-toolbar"><div className="flex items-center gap-3"><Icon name="calendar" /><span>{title}</span></div><span className="text-xs text-neutral-500">Русский / Polski</span></div>
+      <div className="booking-toolbar"><div className="flex items-center gap-3"><Icon name="calendar" /><span>{title}</span></div><span className="text-xs text-neutral-500">{t.supportedLanguages}</span></div>
       {note && <p className="booking-note" role="status">{note}</p>}
       {event ? <>
-        <div className="cal-booking" aria-label={`Календарь: ${title}`}>
+        <div className="cal-booking" aria-label={`${t.calendarLabel}: ${title}`}>
           <Cal key={session} namespace={`psychology-${session}`} calLink={event.calLink} config={calEmbedConfig} style={{ width: '100%', minHeight: '700px', overflow: 'auto' }} />
         </div>
-        <div className="booking-fallback"><p>Если календарь не отображается, откройте страницу записи отдельно.</p><a className="text-link" href={event.bookingUrl} target="_blank" rel="noopener noreferrer">Открыть в Cal.com ↗</a></div>
+        <div className="booking-fallback"><p>{t.calendarFallback}</p><a className="text-link" href={event.bookingUrl} target="_blank" rel="noopener noreferrer">{t.openCal} ↗</a></div>
       </> : <div className="booking-empty text-center">
         <div className="booking-icon mx-auto mb-6"><Icon name="calendar" /></div>
-        <h3>Запись по договорённости</h3>
-        <p>Онлайн-календарь пока недоступен. Напишите мне, чтобы подобрать удобное время.</p>
-        <a className="dark-button mt-7 inline-block" href={session === 'introduction' ? introductionBookingUrl : whatsapp} target="_blank" rel="noopener noreferrer">Обсудить время в WhatsApp ↗</a>
+        <h3>{t.manualTitle}</h3>
+        <p>{t.manualText}</p>
+        <a className="dark-button mt-7 inline-block" href={session === 'introduction' ? introductionBookingUrl : whatsapp} target="_blank" rel="noopener noreferrer">{t.manualCta} ↗</a>
       </div>}
 
 
     </div>
     <div className="booking-help mt-8 flex flex-col items-center justify-between gap-5 md:flex-row">
-      <p className="text-center text-sm leading-7 text-neutral-600 md:text-left">Есть вопросы перед записью?<br />Напишите мне — обсудим организационные детали.</p>
+      <p className="text-center text-sm leading-7 text-neutral-600 md:text-left">{t.beforeBooking}<br />{t.contactHint}</p>
       <div className="flex flex-wrap justify-center gap-6 text-sm"><a className="text-link" href={whatsapp} target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a className="text-link" href={telegram} target="_blank" rel="noopener noreferrer">Telegram ↗</a></div>
     </div>
   </section>;
 }
 
-function ContactWidget() {
+function ContactWidget({ t }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   useEffect(() => {
@@ -115,98 +121,89 @@ function ContactWidget() {
   }, []);
   return <div ref={ref} className="fixed bottom-5 right-5 z-40 md:bottom-7 md:right-7">
     {open && <div className="mb-4 w-64 border border-neutral-100 bg-white p-6 shadow-xl" id="contact-options">
-      <p className="mb-1 font-serif text-2xl">Polina Pranowicz</p><p className="mb-5 text-xs text-neutral-500">Психолог · Варшава и онлайн</p>
+      <p className="mb-1 font-serif text-2xl">Polina Pranowicz</p><p className="mb-5 text-xs text-neutral-500">{t.roleLocation}</p>
       <a className="mb-3 flex items-center gap-3 text-sm" href={whatsapp} target="_blank" rel="noreferrer"><Icon name="whatsapp" /> WhatsApp</a>
       <a className="mb-3 flex items-center gap-3 text-sm" href={telegram} target="_blank" rel="noreferrer"><Icon name="telegram" /> Telegram</a>
       <a className="text-xs text-link" href="tel:+48576292387">+48 576 292 387</a>
     </div>}
-    <button onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="contact-options" aria-label={open ? 'Закрыть контакты' : 'Открыть контакты'} className="ml-auto flex h-[60px] w-[60px] items-center justify-center rounded-full bg-neutral-900 text-white shadow-lg transition hover:bg-neutral-700"><Icon name={open ? 'close' : 'chat'} className="h-7 w-7" /></button>
+    <button onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="contact-options" aria-label={open ? t.closeContact : t.openContact} className="ml-auto flex h-[60px] w-[60px] items-center justify-center rounded-full bg-neutral-900 text-white shadow-lg transition hover:bg-neutral-700"><Icon name={open ? 'close' : 'chat'} className="h-7 w-7" /></button>
   </div>;
 }
 
-function Consultations({ onSelect }) {
+function Consultations({ t, onSelect }) {
   return <section id="consultations" className="page-container py-20 md:py-24">
     <div className="mx-auto mb-12 max-w-[660px] text-center">
-      <p className="eyebrow mb-5">Формат работы</p>
-      <h2>Пространство для разговора о вас</h2>
-      <p className="mt-6 text-sm leading-7 text-neutral-600">Индивидуальные консультации онлайн на русском и польском языках. Начать можно с 15-минутной встречи-знакомства, а затем продолжить индивидуальную работу.</p>
+      <p className="eyebrow mb-5">{t.workFormat}</p>
+      <h2>{t.consultationsTitle}</h2>
+      <p className="mt-6 text-sm leading-7 text-neutral-600">{t.consultationsText}</p>
     </div>
     <div className="grid gap-6 md:grid-cols-2">
       <article className="consultation-card">
-        <span className="eyebrow">01 / Знакомство</span>
-        <h3>Встреча-знакомство</h3>
-        <div className="session-meta"><span>15 минут</span><span>Бесплатно</span><span>Онлайн</span></div>
-        <p>Короткая первая встреча, чтобы познакомиться, задать вопросы и обсудить, с чем вам хотелось бы поработать. Можно понять, комфортно ли вам продолжать общение.</p>
-        <a className="text-link" href="#contact" onClick={() => onSelect('introduction')}>Записаться на знакомство ↗</a>
+        <span className="eyebrow">{t.introLabel}</span>
+        <h3>{t.booking.introduction.title}</h3>
+        <div className="session-meta"><span>{t.introDuration}</span><span>{t.free}</span><span>{t.online}</span></div>
+        <p>{t.introText}</p>
+        <a className="text-link" href="#contact" onClick={() => onSelect('introduction')}>{t.introCta} ↗</a>
       </article>
       <article className="consultation-card">
-        <span className="eyebrow">02 / Диалог</span>
-        <h3>Индивидуальная консультация</h3>
-        <div className="session-price"><span>140 zł</span><small>за сессию · 50 минут</small></div>
-        <p>Вместе исследуем ваши переживания, отношения и жизненные ситуации. Ищем причины возникающих трудностей и подходящие вам способы справляться с ними.</p>
-        <a className="text-link" href="#contact" onClick={() => onSelect('consultation')}>Выбрать время консультации ↗</a>
+        <span className="eyebrow">{t.sessionLabel}</span>
+        <h3>{t.booking.consultation.title}</h3>
+        <div className="session-price"><span>140 zł</span><small>{t.sessionDuration}</small></div>
+        <p>{t.sessionText}</p>
+        <a className="text-link" href="#contact" onClick={() => onSelect('consultation')}>{t.sessionCta} ↗</a>
       </article>
     </div>
   </section>;
 }
 
-function Questions() {
-  const questions = [
-    ['Как проходит встреча-знакомство?', 'Первая встреча длится 15 минут, проходит онлайн и бесплатна. Мы знакомимся, обсуждаем ваш запрос и вопросы о дальнейшей работе. Выберите «Встреча-знакомство» в разделе «Записаться» и отправьте заявку на удобное время. Запись требует подтверждения.'],
-    ['Нужно ли готовиться к первой встрече?', 'Вы можете заранее подумать, о чём хотелось бы поговорить, или начать с того, что волнует прямо сейчас. Необязательно подбирать правильные слова — разобраться в запросе можно вместе.'],
-    ['На каком языке проходят консультации?', 'Я провожу индивидуальные консультации онлайн на русском и польском языках. При записи укажите, какой язык вам удобнее.'],
-    ['Сколько стоит консультация?', 'Стоимость индивидуальной консультации — 140 zł за 50 минут. Первая 15-минутная встреча-знакомство бесплатна. Доступное время можно выбрать в разделе «Записаться». По организационным вопросам напишите мне в WhatsApp или Telegram.'],
-  ];
+function Questions({ t }) {
   return <section className="page-container py-16 md:py-20" aria-labelledby="questions-title">
-    <div className="mx-auto max-w-[780px]"><p className="eyebrow mb-5">Перед встречей</p><h2 id="questions-title" className="mb-9">Частые вопросы</h2>
-      {questions.map(([question, answer]) => <details key={question} className="question"><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}
+    <div className="mx-auto max-w-[780px]"><p className="eyebrow mb-5">{t.beforeMeeting}</p><h2 id="questions-title" className="mb-9">{t.faqTitle}</h2>
+      {t.questions.map(([question, answer]) => <details key={question} className="question"><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}
     </div>
   </section>;
 }
 
 function App() {
-  const [session, setSession] = useState('consultation');
+  const t = translations[language];
+  const [session, setSession] = useState(() => new URLSearchParams(window.location.search).get('session') === 'introduction' ? 'introduction' : 'consultation');
   useEffect(() => {
-    document.title = 'Полина Pranowicz — психолог в Варшаве и онлайн';
     if (window.location.pathname.replace(/\/$/, '') === `${baseUrl}portfolio`) {
       window.history.replaceState(null, '', `${baseUrl}#consultations`);
-      document.getElementById('consultations')?.scrollIntoView();
     }
+    const section = document.getElementById(window.location.hash.slice(1));
+    section?.scrollIntoView({ behavior: 'instant' });
   }, []);
   return <>
-    <a href="#main" className="skip-link">Перейти к содержимому</a>
-    <Header />
+    <a href="#main" className="skip-link">{t.skip}</a>
+    <Header t={t} session={session} />
     <main id="main">
 
         <section className="hero relative flex min-h-[620px] items-center justify-center text-center text-white">
-          <img className="absolute inset-0 h-full w-full object-cover" src={`${baseUrl}images/hero.jpg`} alt="Психолог Polina Pranowicz" fetchPriority="high" width="2520" height="1680" />
+          <img className="absolute inset-0 h-full w-full object-cover" src={`${baseUrl}images/hero.jpg`} alt={t.heroAlt} fetchPriority="high" width="2520" height="1680" />
           <div className="absolute inset-0 bg-black/30" />
-          <div className="hero-copy relative z-10 mx-auto max-w-[1000px] px-6"><p className="eyebrow mb-6 text-white/90">Полина Pranowicz · Психолог</p><h1>О себе. О чувствах. О жизни.</h1><p className="mx-auto mt-5 max-w-[650px] text-base leading-relaxed">Психологическая помощь и поддержка в Варшаве и онлайн по всему миру</p><a className="hero-cta mt-9 inline-flex items-center gap-6" href="#contact" onClick={() => setSession('consultation')}>Записаться на консультацию <span aria-hidden="true">↗</span></a></div>
-          <a href="#about" className="absolute bottom-6 left-1/2 -translate-x-1/2 p-3 transition hover:translate-y-1" aria-label="Обо мне"><Icon name="arrow" /></a>
+          <div className="hero-copy relative z-10 mx-auto max-w-[1000px] px-6"><p className="eyebrow mb-6 text-white/90">{t.heroByline}</p><h1>{t.heroTitle}</h1><p className="mx-auto mt-5 max-w-[650px] text-base leading-relaxed">{t.heroText}</p><a className="hero-cta mt-9 inline-flex items-center gap-6" href="#contact" onClick={() => setSession('consultation')}>{t.bookTitle} <span aria-hidden="true">↗</span></a></div>
+          <a href="#about" className="absolute bottom-6 left-1/2 -translate-x-1/2 p-3 transition hover:translate-y-1" aria-label={t.aboutTitle}><Icon name="arrow" /></a>
         </section>
         <section id="about" className="about-grid mx-auto grid max-w-[828px] items-center gap-10 px-6 py-[60px] md:grid-cols-2 md:gap-[60px]">
-          <div><h2 className="mb-5">Обо мне</h2><div className="space-y-5 text-base leading-[1.5]">{biography.map(text => <p key={text}>{text}</p>)}</div></div>
-          <img className="mx-auto w-full max-w-[420px]" src={`${baseUrl}images/about.jpg`} alt="Полина — психолог в Варшаве" loading="lazy" width="720" height="1080" />
+          <div><h2 className="mb-5">{t.aboutTitle}</h2><div className="space-y-5 text-base leading-[1.5]">{t.biography.map(text => <p key={text}>{text}</p>)}</div></div>
+          <img className="mx-auto w-full max-w-[420px]" src={`${baseUrl}images/about.jpg`} alt={t.aboutAlt} loading="lazy" width="720" height="1080" />
         </section>
         <div className="page-container"><hr /></div>
         <section id="approach" className="approach-section py-20 md:py-24">
-          <div className="mx-auto max-w-[800px] px-6 text-center"><p className="eyebrow mb-6">Мой подход</p><h2>Место, где можно быть собой<br className="hidden md:block" /> и говорить о важном</h2><p className="mx-auto mt-7 max-w-[620px] text-sm leading-7 text-neutral-600">Уважение к вашей индивидуальности, внимательное отношение к вашему опыту и отсутствие осуждения — то, на что я опираюсь в работе. Мне важно слышать вас и быть в честном, открытом диалоге.</p></div>
-          <div className="page-container mt-14 grid gap-8 md:grid-cols-3 md:gap-12">{[
-            ['Чувства и тревоги', 'Когда сложно понять свои переживания, справиться с тревогой или найти внутреннюю опору.'],
-            ['Отношения', 'Когда хочется разобраться в отношениях, своих потребностях и том, как говорить о них с другими.'],
-            ['Жизненные перемены', 'Когда привычное меняется, предстоит выбор или нужна поддержка в непростой ситуации.'],
-          ].map(([title, text]) => <div key={title} className="topic"><h3>{title}</h3><p>{text}</p></div>)}</div>
+          <div className="mx-auto max-w-[800px] px-6 text-center"><p className="eyebrow mb-6">{t.approachLabel}</p><h2>{t.approachTitle}</h2><p className="mx-auto mt-7 max-w-[620px] text-sm leading-7 text-neutral-600">{t.approachText}</p></div>
+          <div className="page-container mt-14 grid gap-8 md:grid-cols-3 md:gap-12">{t.topics.map(([title, text]) => <div key={title} className="topic"><h3>{title}</h3><p>{text}</p></div>)}</div>
         </section>
         <div className="page-container"><hr /></div>
-        <Consultations onSelect={setSession} />
-        <Questions />
+        <Consultations t={t} onSelect={setSession} />
+        <Questions t={t} />
         <div className="page-container"><hr /></div>
-        <Contact session={session} onSelect={setSession} />
+        <Contact t={t} session={session} onSelect={setSession} />
         <div className="page-container"><hr /></div>
 
     </main>
-    <Footer />
-    <ContactWidget />
+    <Footer t={t} />
+    <ContactWidget t={t} />
 
   </>;
 }

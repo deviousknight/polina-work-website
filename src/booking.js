@@ -14,15 +14,6 @@ export function getCalBooking(value = '') {
 }
 
 export const bookingOptions = {
-  consultation: {
-    title: 'Индивидуальная консультация',
-    details: '50 минут · 140 zł',
-    event: getCalBooking(import.meta.env?.VITE_CAL_BOOKING_URL || 'https://cal.com/polina.pranovich/sesja'),
-  },
-  introduction: {
-    title: 'Встреча-знакомство',
-    details: '15 минут · Бесплатно',
-    event: getCalBooking(import.meta.env?.VITE_CAL_INTRO_BOOKING_URL || 'https://cal.com/polina.pranovich/15min'),
-    note: 'Запись на знакомство требует подтверждения.',
-  },
+  consultation: getCalBooking(import.meta.env?.VITE_CAL_BOOKING_URL || 'https://cal.com/polina.pranovich/sesja'),
+  introduction: getCalBooking(import.meta.env?.VITE_CAL_INTRO_BOOKING_URL || 'https://cal.com/polina.pranovich/15min'),
 };

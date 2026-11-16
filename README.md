@@ -20,6 +20,10 @@ Deploy the `dist/` directory to any static host. The former `/portfolio` URL red
 
 The site is adapted for a psychology practice: about, approach, consultation formats, common questions, and booking. The original portrait photographs and locally hosted fonts are retained. Photography portfolio content, placeholder branding, and generic social links have been removed. The first meeting is a free 15-minute introduction; an individual consultation lasts 50 minutes and costs 140 PLN.
 
+## Languages
+
+The Russian version is served at the site root and the Polish version at `/pl/`. Both use the shared translations in `src/translations.js`. The header language switch preserves the current section and the selected introductory meeting when switching in the booking section. Cal.com controls the language inside its embedded interface.
+
 ## Cal.com booking
 
 Visitors pick a meeting type above the inline calendar. Only the selected event is loaded:

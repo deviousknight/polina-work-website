@@ -1,12 +1,21 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import { fileURLToPath } from 'node:url';
 import { writeFileSync, mkdirSync } from 'node:fs';
 
 export default defineConfig(({ command, isPreview }) => {
   const base = process.env.VITE_BASE_PATH || (command === 'build' || isPreview ? '/polina-work-website/' : '/');
   return {
     base,
+    build: {
+      rollupOptions: {
+        input: {
+          ru: fileURLToPath(new URL('./index.html', import.meta.url)),
+          pl: fileURLToPath(new URL('./pl/index.html', import.meta.url)),
+        },
+      },
+    },
     plugins: [react(), tailwindcss(), {
       name: 'legacy-route-redirect',
       closeBundle() {
