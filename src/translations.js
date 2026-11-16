@@ -1,5 +1,6 @@
 export const translations = {
   "ru": {
+    "displayName": "Полина Пранович",
     "biography": [
       "Здравствуйте, меня зовут Полина.",
       "Я психолог и работаю в Варшаве. Провожу индивидуальные консультации онлайн на русском и польском языках.",
@@ -48,7 +49,7 @@ export const translations = {
       "contact": "Записаться"
     },
     "roleLocation": "Психолог · Варшава и онлайн",
-    "footerRole": "Polina Pranowicz · Психолог",
+    "footerRole": "Полина Пранович · Психолог",
     "footerText": "Индивидуальные консультации на русском и польском языках",
     "firstStep": "Первый шаг",
     "bookTitle": "Записаться на консультацию",
@@ -77,14 +78,14 @@ export const translations = {
     "beforeMeeting": "Перед встречей",
     "faqTitle": "Частые вопросы",
     "skip": "Перейти к содержимому",
-    "heroByline": "Полина Pranowicz · Психолог",
+    "heroByline": "Полина Пранович · Психолог",
     "heroTitle": "О себе. О чувствах. О жизни.",
     "heroText": "Психологическая помощь и поддержка в Варшаве и онлайн по всему миру",
     "aboutTitle": "Обо мне",
     "approachLabel": "Мой подход",
     "approachTitle": "Место, где можно быть собой и говорить о важном",
     "approachText": "Уважение к вашей индивидуальности, внимательное отношение к вашему опыту и отсутствие осуждения — то, на что я опираюсь в работе. Мне важно слышать вас и быть в честном, открытом диалоге.",
-    "homeLabel": "Полина Pranowicz — на главную",
+    "homeLabel": "Полина Пранович — на главную",
     "menuClose": "Закрыть меню",
     "menuOpen": "Открыть меню",
     "navLabel": "Основная навигация",
@@ -92,7 +93,7 @@ export const translations = {
     "calendarLabel": "Календарь",
     "closeContact": "Закрыть контакты",
     "openContact": "Открыть контакты",
-    "heroAlt": "Психолог Polina Pranowicz",
+    "heroAlt": "Психолог Полина Пранович",
     "aboutAlt": "Полина — психолог в Варшаве",
     "introDraft": "Здравствуйте! Хочу записаться на 15-минутную встречу-знакомство.",
     "languageLabel": "Выбор языка",
@@ -109,6 +110,7 @@ export const translations = {
     }
   },
   "pl": {
+    "displayName": "Polina Pranowicz",
     "biography": [
       "Dzień dobry, mam na imię Polina.",
       "Jestem psychologiem i pracuję w Warszawie. Prowadzę indywidualne konsultacje online w języku polskim i rosyjskim.",

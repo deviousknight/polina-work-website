@@ -42,7 +42,7 @@ function Header({ t, session }) {
   }, []);
   const solid = scrolled || menu;
   return <header className={`site-header ${solid ? 'solid' : ''}`}>
-    <a href={`${languagePath}#main`} className="logo" aria-label={t.homeLabel}><span>Polina Pranowicz</span><small>{t.roleLocation}</small></a>
+    <a href={`${languagePath}#main`} className="logo" aria-label={t.homeLabel}><span>{t.displayName}</span><small>{t.roleLocation}</small></a>
     <button className="menu-toggle md:hidden" aria-label={menu ? t.menuClose : t.menuOpen} aria-expanded={menu} onClick={() => setMenu(!menu)}><Icon name={menu ? 'close' : 'menu'} /></button>
     <nav aria-label={t.navLabel} className={`${menu ? 'flex' : 'hidden'} md:flex`}>
       {Object.entries(t.nav).map(([id, label]) => <a key={id} href={`${languagePath}#${id}`} onClick={() => setMenu(false)}>{label}</a>)}
@@ -63,7 +63,7 @@ function Footer({ t }) {
     </div>
     <p>{t.footerRole}</p>
     <p className="mt-2 text-xs">{t.footerText}</p>
-    <p className="mt-5 text-[11px]">© {new Date().getFullYear()} Polina Pranowicz</p>
+    <p className="mt-5 text-[11px]">© {new Date().getFullYear()} {t.displayName}</p>
   </footer>;
 }
 
@@ -121,7 +121,7 @@ function ContactWidget({ t }) {
   }, []);
   return <div ref={ref} className="fixed bottom-5 right-5 z-40 md:bottom-7 md:right-7">
     {open && <div className="mb-4 w-64 border border-neutral-100 bg-white p-6 shadow-xl" id="contact-options">
-      <p className="mb-1 font-serif text-2xl">Polina Pranowicz</p><p className="mb-5 text-xs text-neutral-500">{t.roleLocation}</p>
+      <p className="mb-1 font-serif text-2xl">{t.displayName}</p><p className="mb-5 text-xs text-neutral-500">{t.roleLocation}</p>
       <a className="mb-3 flex items-center gap-3 text-sm" href={whatsapp} target="_blank" rel="noreferrer"><Icon name="whatsapp" /> WhatsApp</a>
       <a className="mb-3 flex items-center gap-3 text-sm" href={telegram} target="_blank" rel="noreferrer"><Icon name="telegram" /> Telegram</a>
       <a className="text-xs text-link" href="tel:+48576292387">+48 576 292 387</a>
