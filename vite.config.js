@@ -4,8 +4,8 @@ import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath } from 'node:url';
 import { writeFileSync, mkdirSync } from 'node:fs';
 
-export default defineConfig(({ command, isPreview }) => {
-  const base = process.env.VITE_BASE_PATH || (command === 'build' || isPreview ? '/polina-work-website/' : '/');
+export default defineConfig(() => {
+  const base = process.env.VITE_BASE_PATH || '/';
   return {
     base,
     build: {

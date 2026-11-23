@@ -18,6 +18,30 @@ npm run preview
 
 Deploy the `dist/` directory to any static host. The former `/portfolio` URL redirects to `/#consultations`, including a generated static redirect page.
 
+## Cloudflare Workers
+
+Production URL: https://polina-work-website.92knight29.workers.dev/
+
+The default build uses `/` for asset URLs, navigation, and language links. The tracked `wrangler.jsonc` serves the built `dist/` directory as static assets, including the Russian home page and Polish `/pl/` page.
+
+For a Git-connected Worker, use these settings in Cloudflare Workers & Pages:
+
+- Repository: `deviousknight/polina-work-website`
+- Production branch: `main`
+- Root directory: the repository root
+- Build command: `npm run build`
+- Deploy command: `npx wrangler deploy`
+- `VITE_BASE_PATH`: unset or `/` (remove any old `/polina-work-website/` value)
+
+Redeploy after changing these settings. For manual deployment from an authenticated machine:
+
+```sh
+npm run build
+npx wrangler deploy
+```
+
+Upload the built `dist/` directory rather than the source `index.html` or the repository root when using direct asset upload. No SPA fallback is needed: `/pl/` has its own HTML entry point.
+
 The site is adapted for a psychology practice: about, approach, consultation formats, common questions, and booking. The original portrait photographs and locally hosted fonts are retained. Photography portfolio content, placeholder branding, and generic social links have been removed. The first meeting is a free 15-minute introduction; an individual consultation lasts 50 minutes and costs 140 PLN.
 
 ## Languages
@@ -44,4 +68,4 @@ The workflow in `.github/workflows/deploy.yml` builds and deploys the site after
 
 Default production URL: https://deviousknight.github.io/polina-work-website/
 
-`npm run build` and `npm run preview` use `/polina-work-website/`; `npm run dev` continues to serve `/`. The workflow obtains the deployment base path from GitHub Pages. For another host or a custom domain, set `VITE_BASE_PATH=/` at build time. Photos, fonts, navigation, and the legacy portfolio redirect respect the base path. The public Cal.com event URL is included in the build and requires no secrets.
+`npm run build`, `npm run preview`, and `npm run dev` use `/` by default. The GitHub Pages workflow sets `VITE_BASE_PATH` to the deployment base path returned by GitHub Pages, so repository hosting continues to use `/polina-work-website/`. Photos, fonts, navigation, and the legacy portfolio redirect respect the base path. The public Cal.com event URL is included in the build and requires no secrets.
